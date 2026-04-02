@@ -15,8 +15,8 @@ const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
         headless: true,
-        // Docker use kar rahe ho toh ye path kaam karega
-        executablePath: '/usr/bin/google-chrome-stable', 
+        // Docker ke liye ye path hamesha kaam karta hai
+        executablePath: '/usr/bin/google-chrome', 
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
