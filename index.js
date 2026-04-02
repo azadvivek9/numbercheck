@@ -3,7 +3,7 @@ const qrcode = require('qrcode-terminal');
 const axios = require('axios');
 const http = require('http');
 
-// Render/Cloud compatibility ke liye basic server
+// Render/Cloud uptime ke liye basic server
 const server = http.createServer((req, res) => {
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end('Bot is Active\n');
@@ -15,8 +15,8 @@ const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
         headless: true,
-        // Ye line Render ke liye zaruri hai
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/opt/render/project/src/.cache/puppeteer/chrome/linux-146.0.7680.153/chrome-linux64/chrome', 
+        // Docker use kar rahe ho toh ye path kaam karega
+        executablePath: '/usr/bin/google-chrome-stable', 
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -26,7 +26,6 @@ const client = new Client({
 });
 
 client.on('qr', (qr) => {
-    // Ye QR code Render ke "Logs" section mein dikhega
     qrcode.generate(qr, { small: true });
     console.log('QR RECEIVED: Scan this using your new WhatsApp number');
 });
@@ -34,10 +33,8 @@ client.on('qr', (qr) => {
 client.on('ready', () => {
     console.log('Bot is ready and connected!');
 });
-client.on('message', async (msg) => {
-    console.log(`Message Received: ${msg.body}`); // Ye line add karein
-    // ... baaki code
 
+// Single message listener with correct syntax
 client.on('message', async (msg) => {
     const text = msg.body.toLowerCase();
     const numberMatch = text.match(/\d{10}/);
@@ -45,6 +42,7 @@ client.on('message', async (msg) => {
 
     if (numberMatch && triggerPhrase) {
         const phoneNumber = numberMatch[0];
+        console.log(`Processing request for: ${phoneNumber}`);
         
         try {
             const apiUrl = `https://ansh-apis.is-dev.org/api/truecaller?key=ansh&q=${phoneNumber}`;
@@ -53,11 +51,9 @@ client.on('message', async (msg) => {
 
             if (data.status && data.result) {
                 const res = data.result;
-
-                // Only essential details (No powered by message)
                 const detailsText = `
 *📞 Number Details Found*
-━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━
 👤 *Name:* ${res.name || 'Unknown'}
 📱 *Number:* ${res.number}
 🏢 *Carrier:* ${res.carrier || 'N/A'}
