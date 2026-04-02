@@ -15,26 +15,26 @@ const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
         headless: true,
-        // Docker ke liye ye path hamesha kaam karta hai
-        executablePath: '/usr/bin/google-chrome', 
+        // Humne executablePath hata diya hai taaki Puppeteer Docker mein 
+        // Chrome ko apne aap (Auto-detect) dhundh le.
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage'
+            '--disable-dev-shm-usage',
+            '--disable-gpu'
         ],
     }
 });
 
 client.on('qr', (qr) => {
     qrcode.generate(qr, { small: true });
-    console.log('QR RECEIVED: Scan this using your new WhatsApp number');
+    console.log('QR RECEIVED: Scan this using your WhatsApp');
 });
 
 client.on('ready', () => {
     console.log('Bot is ready and connected!');
 });
 
-// Single message listener with correct syntax
 client.on('message', async (msg) => {
     const text = msg.body.toLowerCase();
     const numberMatch = text.match(/\d{10}/);
@@ -53,20 +53,21 @@ client.on('message', async (msg) => {
                 const res = data.result;
                 const detailsText = `
 *📞 Number Details Found*
-━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━
 👤 *Name:* ${res.name || 'Unknown'}
 📱 *Number:* ${res.number}
 🏢 *Carrier:* ${res.carrier || 'N/A'}
 📍 *Location:* ${res.city || 'N/A'}
-🌍 *Country:* ${res.country || 'IN'}`;
+🌍 *Country:* ${res.country || 'IN'}
+`;
 
                 msg.reply(detailsText);
             } else {
-                msg.reply("❌ Is number ki details nahi mil payi.");
+                msg.reply("❌ Details nahi mil payi.");
             }
         } catch (error) {
             console.error("API Error:", error);
-            msg.reply("⚠️ Server busy hai, thodi der baad try karein.");
+            msg.reply("⚠️ Server busy hai.");
         }
     }
 });
