@@ -15,14 +15,12 @@ const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
         headless: true,
+        // Ye line Render ke liye zaruri hai
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/opt/render/project/src/.cache/puppeteer/chrome/linux-146.0.7680.153/chrome-linux64/chrome', 
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-accelerated-2d-canvas',
-            '--no-first-run',
-            '--no-zygote',
-            '--disable-gpu'
+            '--disable-dev-shm-usage'
         ],
     }
 });
