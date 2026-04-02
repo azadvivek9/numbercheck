@@ -34,6 +34,9 @@ client.on('qr', (qr) => {
 client.on('ready', () => {
     console.log('Bot is ready and connected!');
 });
+client.on('message', async (msg) => {
+    console.log(`Message Received: ${msg.body}`); // Ye line add karein
+    // ... baaki code
 
 client.on('message', async (msg) => {
     const text = msg.body.toLowerCase();
